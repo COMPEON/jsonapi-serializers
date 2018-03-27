@@ -1,6 +1,7 @@
 module MyApp
   class Post
     attr_accessor :id
+    attr_accessor :lid
     attr_accessor :title
     attr_accessor :body
     attr_accessor :author
@@ -18,6 +19,7 @@ module MyApp
 
   class LongComment
     attr_accessor :id
+    attr_accessor :lid
     attr_accessor :body
     attr_accessor :user
     attr_accessor :post

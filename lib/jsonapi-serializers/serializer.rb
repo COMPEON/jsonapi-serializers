@@ -47,6 +47,10 @@ module JSONAPI
         object.id.to_s
       end
 
+      def lid
+        object.lid.to_s if object.respond_to?(:lid)
+      end
+
       # Override this to customize the JSON:API "type" for this object.
       # By default, the type is the object's class name lowercased, pluralized, and dasherized,
       # per the spec naming recommendations: http://jsonapi.org/recommendations/#naming
@@ -128,10 +132,7 @@ module JSONAPI
               data[formatted_attribute_name]['data'] = nil
             else
               related_object_serializer = JSONAPI::Serializer.find_serializer(object, @options)
-              data[formatted_attribute_name]['data'] = {
-                'type' => related_object_serializer.type.to_s,
-                'id' => related_object_serializer.id.to_s,
-              }
+              data[formatted_attribute_name]['data'] = _data(related_object_serializer)
             end
           end
         end
@@ -159,14 +160,22 @@ module JSONAPI
             objects = has_many_relationship(attribute_name, attr_data) || []
             objects.each do |obj|
               related_object_serializer = JSONAPI::Serializer.find_serializer(obj, @options)
-              data[formatted_attribute_name]['data'] << {
-                'type' => related_object_serializer.type.to_s,
-                'id' => related_object_serializer.id.to_s,
-              }
+              data[formatted_attribute_name]['data'] << _data(related_object_serializer)
             end
           end
         end
         data
+      end
+
+      def _data(related_object_serializer)
+        lid = related_object_serializer.lid
+
+        {
+          'type' => related_object_serializer.type.to_s,
+          'id' => related_object_serializer.id.to_s
+        }.tap do |data|
+          data['lid'] = lid.to_s unless lid.blank?
+        end
       end
 
       def attributes
@@ -411,6 +420,7 @@ module JSONAPI
       # http://jsonapi.org/format/#document-resource-objects
       # We'll assume that if the id is blank, it means the resource is to be created.
       data['id'] = serializer.id.to_s if serializer.id && !serializer.id.empty?
+      data['lid'] = serializer.lid.to_s if serializer.lid && !serializer.lid.empty?
 
       # Merge in optional top-level members if they are non-nil.
       # http://jsonapi.org/format/#document-structure-resource-objects
