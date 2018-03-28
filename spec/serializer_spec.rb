@@ -281,7 +281,9 @@ describe JSONAPI::Serializer do
       end
       it 'can serialize primary data for a simple to-many relationship' do
         long_comments = create_list(:long_comment, 2)
-        post = create(:post, long_comments: long_comments)
+        long_comments[0].lid = '259e5b8f-ccee-47dc-81ba-5592a746b149'
+        long_comments[1].lid = '072fe94e-323d-404c-9793-05b9ce2502a5'
+        post = create(:post, long_comments: long_comments, lid: 'c61395b6-0444-458b-bb28-3bb10db04ae1')
         options = {
           serializer: MyApp::PostSerializer,
           include_linkages: ['author', 'long-comments'],
@@ -289,6 +291,7 @@ describe JSONAPI::Serializer do
         primary_data = serialize_primary(post, options)
         expect(primary_data).to eq({
           'id' => '1',
+          'lid' => 'c61395b6-0444-458b-bb28-3bb10db04ae1',
           'type' => 'posts',
           'attributes' => {
             'title' => 'Title for Post 1',
@@ -317,10 +320,12 @@ describe JSONAPI::Serializer do
                 {
                   'type' => 'long-comments',
                   'id' => '1',
+                  'lid' => '259e5b8f-ccee-47dc-81ba-5592a746b149'
                 },
                 {
                   'type' => 'long-comments',
                   'id' => '2',
+                  'lid' => '072fe94e-323d-404c-9793-05b9ce2502a5'
                 },
               ],
             },
