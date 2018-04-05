@@ -168,12 +168,13 @@ module JSONAPI
       end
 
       def _data(related_object_serializer)
+        id = related_object_serializer.id
         lid = related_object_serializer.lid
 
         {
           'type' => related_object_serializer.type.to_s,
-          'id' => related_object_serializer.id.to_s
         }.tap do |data|
+          data['id'] = id.to_s unless id.blank?
           data['lid'] = lid.to_s unless lid.blank?
         end
       end
