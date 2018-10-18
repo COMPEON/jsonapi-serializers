@@ -541,7 +541,7 @@ describe JSONAPI::Serializer do
     end
     it 'can include a top level links node' do
       post = create(:post)
-      links = {self: 'http://example.com/posts'}
+      links = {'self' => 'http://example.com/posts'}
       expect(JSONAPI::Serializer.serialize(post, links: links)).to eq({
         'links' => links,
         'data' => serialize_primary(post, {serializer: MyApp::PostSerializer}),

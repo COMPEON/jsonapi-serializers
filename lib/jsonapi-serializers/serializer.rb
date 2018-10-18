@@ -345,7 +345,7 @@ module JSONAPI
       }
       result['jsonapi'] = options[:jsonapi] if options[:jsonapi]
       result['meta'] = options[:meta] if options[:meta]
-      result['links'] = options[:links] if options[:links]
+      result['links'] = options[:links].transform_keys { |key| key.to_s.dasherize } if options[:links]
       result['errors'] = options[:errors] if options[:errors]
 
       # If 'include' relationships are given, recursively find and include each object.
@@ -432,7 +432,7 @@ module JSONAPI
       jsonapi = serializer.jsonapi
       meta = serializer.meta
       data['attributes'] = attributes if !attributes.empty?
-      data['links'] = links if !links.empty?
+      data['links'] = links.transform_keys { |key| key.to_s.dasherize } if !links.empty?
       data['relationships'] = relationships if !relationships.empty?
       data['jsonapi'] = jsonapi if !jsonapi.nil?
       data['meta'] = meta if !meta.nil?
